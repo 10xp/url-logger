@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graph Viewer</title>
+    <style>
+        body { margin: 0; font-family: system-ui, Arial; }
+        canvas { display: block; background: #f9f9f9; }
+        /* controls panel */
+        #controls {
+            position: fixed;
+            left: 12px;
+            top: 12px;
+            background: rgba(255,255,255,0.95);
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            z-index: 100;
+            max-width: 320px;
+            font-size: 13px;
+        }
+        #controls label { display:block; margin-top:6px; }
+        #controls input[type=range] { width: 100%; }
+        #controls .row { display:flex; gap:8px; align-items:center; }
+        #controls button { margin-top:8px; }
+    </style>
+</head>
+<body>
+<canvas id="graphCanvas" width="800" height="600"></canvas>
+<div id="controls">
+    <div><strong>Simulation</strong></div>
+    <label>Repulsion <span id="repVal">4000</span>
+        <input id="repulsion" type="range" min="100" max="20000" step="100" value="4000">
+    </label>
+    <label>Repulsion soft <span id="softVal">40</span>
+        <input id="repulsionSoft" type="range" min="0" max="200" step="1" value="40">
+    </label>
+    <label>Spring K <span id="kVal">0.06</span>
+        <input id="springK" type="range" min="0.01" max="0.5" step="0.01" value="0.06">
+    </label>
+    <label>Center force <span id="centerVal">0.10</span>
+        <input id="centerForce" type="range" min="0" max="1" step="0.01" value="0.10">
+    </label>
+    <div class="row"><button id="resetView">Reset view</button><button id="startSim">Start sim</button></div>
+</div>
+<script>
+    // Example data
+    const connections = [];
+    chrome.storage.local.get('loggedUrls', (data) => {
+        connections = data.loggedUrls || [];
+        console.log(connections);
+    });
+
+    const nodeIds = [...new Set(connections.flatMap(c => c.connection))];
+
+    // Build node objects
+    const nodes = nodeIds.map((id, i) => ({
+        id,
+        x: 400 + 200 * Math.cos((2 * Math.PI * i) / nodeIds.length),
+        y: 300 + 200 * Math.sin((2 * Math.PI * i) / nodeIds.length),
+        vx: 0,
+        vy: 0,
+        mass: 1,
+        radius: 24,
+        fixed: false,   // if true, node won't be moved by simulation
+        dragging: false // true while user is dragging
+    }));
+
+    function findNodeById(id) { return nodes.find(n => n.id === id); }
+
+    // Canvas setup
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // HiDPI support
+    function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // Make canvas fill window
+    function fitCanvasToWindow() {
+        canvas.style.width = '100%';
+        canvas.style.height = '100vh';
+        resizeCanvas();
+    }
+    fitCanvasToWindow();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Simulation parameters
+    const params = {
+        // repulsion magnitude (used with 1/(dist+soft))
+        repulsion: 4000,
+        // softening distance so repulsion doesn't explode at very short distances
+        repulsionSoft: 40,
+        // base spring constant for links (multiplied by weight)
+        springK: 0.06,
+        damping: 0.9,      // velocity damping per tick
+        // default desired link length (will be reduced for higher weights)
+        restLength: 160,
+        // stronger attraction to center (increased per request)
+        centerForce: 0.10
+    };
+
+    // simulation run control: only run the animation loop while needed
+    let simRunning = false; // whether tick loop is active
+    const motionThreshold = 0.02; // velocity threshold to consider settled
+
+    // Pointer interaction state
+    let pointer = { x: 0, y: 0, down: false };
+    let draggedNode = null;
+    let hoveredNode = null;
+
+    // camera (world transform)
+    let cam = { x: 0, y: 0, scale: 1 };
+
+    function screenToWorld(x, y) {
+        const rect = canvas.getBoundingClientRect();
+        const sx = x - rect.left;
+        const sy = y - rect.top;
+        return { x: (sx - cam.x) / cam.scale, y: (sy - cam.y) / cam.scale };
+    }
+
+    function worldToScreen(wx, wy) {
+        return { x: wx * cam.scale + cam.x, y: wy * cam.scale + cam.y };
+    }
+
+    function getPointerPos(evt) {
+        const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+        const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+        return screenToWorld(clientX, clientY);
+    }
+
+    // prevent context menu on canvas (we use right-click for pan)
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    canvas.addEventListener('mousedown', (e) => {
+        // only handle left button for node dragging here
+        if (e.button !== 0) return;
+        const p = getPointerPos(e);
+        pointer.down = true;
+        pointer.x = p.x; pointer.y = p.y;
+        // find node under pointer
+        for (let n of nodes) {
+            const dx = p.x - n.x, dy = p.y - n.y;
+            if (Math.hypot(dx, dy) <= n.radius) {
+                draggedNode = n;
+                n.dragging = true;
+                n.fixed = true; // while dragging, keep it fixed
+                n.vx = n.vy = 0;
+                break;
+            }
+        }
+        startSimulation();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        const p = getPointerPos(e);
+        pointer.x = p.x; pointer.y = p.y;
+        if (draggedNode) {
+            draggedNode.x = pointer.x;
+            draggedNode.y = pointer.y;
+            startSimulation();
+        }
+        // hover detection
+        hoveredNode = null;
+        for (let n of nodes) {
+            const dx = pointer.x - n.x, dy = pointer.y - n.y;
+            if (Math.hypot(dx, dy) <= n.radius) { hoveredNode = n; break; }
+        }
+    });
+
+    window.addEventListener('mouseup', (e) => {
+        pointer.down = false;
+        if (draggedNode) {
+            draggedNode.dragging = false;
+            // keep nodes movable by simulation after release
+            draggedNode.fixed = false;
+            draggedNode = null;
+            startSimulation();
+        }
+    });
+
+    // touch support
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); const p = getPointerPos(e); pointer.down = true; pointer.x = p.x; pointer.y = p.y;
+        for (let n of nodes) {
+            const dx = p.x - n.x, dy = p.y - n.y;
+            if (Math.hypot(dx, dy) <= n.radius) { draggedNode = n; n.dragging = true; n.fixed = true; n.vx = n.vy = 0; break; }
+        }
+        startSimulation();
+    }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const p = getPointerPos(e);
+        pointer.x = p.x; pointer.y = p.y;
+        if (draggedNode) { draggedNode.x = pointer.x; draggedNode.y = pointer.y; }
+        // hover detection for touch
+        hoveredNode = null;
+        for (let n of nodes) {
+            const dx = pointer.x - n.x, dy = pointer.y - n.y;
+            if (Math.hypot(dx, dy) <= n.radius) { hoveredNode = n; break; }
+        }
+        if (draggedNode) startSimulation();
+    }, { passive: false });
+    canvas.addEventListener('touchend', (e) => { pointer.down = false; if (draggedNode) { draggedNode.dragging = false; draggedNode.fixed = false; draggedNode = null; } startSimulation(); });
+
+    // Zoom with wheel (center at mouse)
+    canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        const before = screenToWorld(e.clientX, e.clientY);
+        const zoomFactor = Math.exp(-e.deltaY * 0.0015);
+        cam.scale = Math.max(0.1, Math.min(4, cam.scale * zoomFactor));
+        // adjust cam.x/cam.y to keep mouse world pos stable
+        const after = screenToWorld(e.clientX, e.clientY);
+        cam.x += (after.x - before.x) * cam.scale;
+        cam.y += (after.y - before.y) * cam.scale;
+        draw();
+    }, { passive: false });
+
+    // Pan with middle mouse or right mouse drag
+    let panning = false;
+    let panStart = null;
+    canvas.addEventListener('mousedown', (e) => {
+        if (e.button === 1 || e.button === 2) {
+            panning = true;
+            panStart = { x: e.clientX, y: e.clientY, camX: cam.x, camY: cam.y };
+            e.preventDefault();
+        }
+    });
+    window.addEventListener('mousemove', (e) => {
+        if (panning && panStart) {
+            cam.x = panStart.camX + (e.clientX - panStart.x);
+            cam.y = panStart.camY + (e.clientY - panStart.y);
+            draw();
+        }
+    });
+    window.addEventListener('mouseup', (e) => { if (panning) { panning = false; panStart = null; } });
+
+    // Control bindings
+    function $(id) { return document.getElementById(id); }
+    const repEl = $('repulsion');
+    const softEl = $('repulsionSoft');
+    const kEl = $('springK');
+    const centerEl = $('centerForce');
+    const repVal = $('repVal');
+    const softVal = $('softVal');
+    const kVal = $('kVal');
+    const centerVal = $('centerVal');
+    repEl.addEventListener('input', (e) => { params.repulsion = +e.target.value; repVal.textContent = e.target.value; startSimulation(); });
+    softEl.addEventListener('input', (e) => { params.repulsionSoft = +e.target.value; softVal.textContent = e.target.value; startSimulation(); });
+    kEl.addEventListener('input', (e) => { params.springK = +e.target.value; kVal.textContent = e.target.value; startSimulation(); });
+    centerEl.addEventListener('input', (e) => { params.centerForce = +e.target.value; centerVal.textContent = e.target.value; startSimulation(); });
+    $('resetView').addEventListener('click', () => { cam = { x: 0, y: 0, scale: 1 }; draw(); });
+    $('startSim').addEventListener('click', () => startSimulation());
+
+    // Simulation step
+    function step(dt) {
+        // reset forces
+        const forces = new Map();
+        for (const n of nodes) forces.set(n, { fx: 0, fy: 0 });
+
+        // center attraction: small force pulling nodes toward center
+        const centerX = canvas.width / (2 * (window.devicePixelRatio || 1));
+        const centerY = canvas.height / (2 * (window.devicePixelRatio || 1));
+        for (const n of nodes) {
+            const dx = centerX - n.x, dy = centerY - n.y;
+            forces.get(n).fx += dx * params.centerForce;
+            forces.get(n).fy += dy * params.centerForce;
+        }
+
+        // repulsion between nodes, diminishing with distance (1 / (dist + soft))
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const a = nodes[i], b = nodes[j];
+                let dx = a.x - b.x, dy = a.y - b.y;
+                let dist = Math.hypot(dx, dy);
+                // avoid zero
+                if (dist < 0.01) { dist = 0.01; dx = Math.random() * 0.1 + 0.01; dy = Math.random() * 0.1 + 0.01; }
+                const soft = params.repulsionSoft;
+                // magnitude decreases roughly as 1/(dist + soft)
+                const mag = params.repulsion / (dist + soft);
+                const ux = dx / dist, uy = dy / dist;
+                forces.get(a).fx += ux * mag;
+                forces.get(a).fy += uy * mag;
+                forces.get(b).fx -= ux * mag;
+                forces.get(b).fy -= uy * mag;
+            }
+        }
+
+        // weighted connection attraction (spring-like), stronger weight => stronger pull and shorter rest length
+        for (const link of connections) {
+            const [id1, id2] = link.connection;
+            const a = findNodeById(id1), b = findNodeById(id2);
+            if (!a || !b) continue;
+            let dx = b.x - a.x, dy = b.y - a.y;
+            let dist = Math.hypot(dx, dy) || 0.01;
+            const weight = Math.max(0.1, (link.weight || 1));
+            // rest length smaller for larger weights
+            const rest = params.restLength / (1 + weight / 2);
+            // spring constant scaled by weight
+            const k = params.springK * weight;
+            // Hooke: force = k * (dist - rest)
+            const fs = k * (dist - rest);
+            const ux = dx / dist, uy = dy / dist;
+            forces.get(a).fx += ux * fs;
+            forces.get(a).fy += uy * fs;
+            forces.get(b).fx -= ux * fs;
+            forces.get(b).fy -= uy * fs;
+        }
+
+        // integrate (semi-implicit Euler-ish)
+        for (const n of nodes) {
+            if (n.fixed) continue; // do not move fixed nodes
+            const f = forces.get(n);
+            n.vx = (n.vx + (f.fx / n.mass) * dt) * params.damping;
+            n.vy = (n.vy + (f.fy / n.mass) * dt) * params.damping;
+            n.x += n.vx * dt;
+            n.y += n.vy * dt;
+        }
+    }
+
+    // Draw loop (applies camera transform)
+    function draw() {
+        // clear full canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // apply camera transform for shapes
+        ctx.save();
+        ctx.translate(cam.x, cam.y);
+        ctx.scale(cam.scale, cam.scale);
+
+        // draw links (shapes only)
+        for (const link of connections) {
+            const [id1, id2] = link.connection;
+            const a = findNodeById(id1), b = findNodeById(id2);
+            if (!a || !b) continue;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = '#888';
+            ctx.lineWidth = Math.max(1, (link.weight || 1) / cam.scale);
+            ctx.stroke();
+        }
+
+        // draw nodes (shapes & images) in world space
+        for (const n of nodes) {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+            ctx.fillStyle = n.dragging ? '#ff7f0e' : '#4e79a7';
+            ctx.fill();
+            ctx.lineWidth = 2 / cam.scale;
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+
+            if (n.favicon && n.favicon.complete && n.favicon.naturalWidth) {
+                const imgSize = n.radius * 1.6;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.radius - 2, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(n.favicon, n.x - imgSize / 2, n.y - imgSize / 2, imgSize, imgSize);
+                ctx.restore();
+            } else {
+                ctx.fillStyle = '#fff';
+                ctx.font = `${Math.max(10, 12)}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const short = n.id.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+                ctx.fillText(short, n.x, n.y);
+            }
+        }
+
+        // done world drawing
+        ctx.restore();
+
+        // draw link labels and node tooltips in screen space (so they remain readable)
+        // link weights
+        ctx.fillStyle = '#333';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for (const link of connections) {
+            const [id1, id2] = link.connection;
+            const a = findNodeById(id1), b = findNodeById(id2);
+            if (!a || !b) continue;
+            const midX = (a.x + b.x) / 2;
+            const midY = (a.y + b.y) / 2;
+            const screen = worldToScreen(midX, midY);
+            ctx.fillText(link.weight || '', screen.x, screen.y - 8);
+        }
+
+        // hovered node tooltip
+        if (hoveredNode) {
+            const n = hoveredNode;
+            const padding = 6;
+            const text = n.id;
+            ctx.font = '13px Arial';
+            const metrics = ctx.measureText(text);
+            const boxW = metrics.width + padding * 2;
+            const boxH = 22;
+            const screen = worldToScreen(n.x + n.radius + 8, n.y - boxH / 2);
+            const boxX = screen.x;
+            const boxY = screen.y;
+            ctx.fillStyle = 'rgba(0,0,0,0.75)';
+            roundRect(ctx, boxX, boxY, boxW, boxH, 6, true, false);
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, boxX + padding, boxY + boxH / 2);
+        }
+    }
+
+    // Utility: rounded rect
+    function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+        if (typeof r === 'undefined') r = 5;
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+        if (fill) ctx.fill();
+        if (stroke) ctx.stroke();
+    }
+
+    // Build a favicon URL for a site (uses Google s2 favicons service)
+    function faviconUrlFor(siteUrl) {
+        try {
+            const u = new URL(siteUrl);
+            return `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=64`;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Preload favicons
+    for (const n of nodes) {
+        const favUrl = faviconUrlFor(n.id);
+        if (favUrl) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = favUrl;
+            img.onerror = () => { /* ignore errors */ };
+            n.favicon = img;
+            console.log(img.src);
+        }
+    }
+
+    // initial static draw so UI is visible without running simulation
+    draw();
+
+    // animation (event-driven)
+    let last = 0;
+    function tick(now) {
+        if (!simRunning) return;
+        if (!last) last = now;
+        const dt = Math.min(0.03, (now - last) / 1000); // clamp dt
+        step(dt);
+        draw();
+        last = now;
+
+        // check if any node is still moving or if pointer is down (dragging)
+        let moving = pointer.down;
+        if (!moving) {
+            for (const n of nodes) {
+                if (Math.hypot(n.vx, n.vy) > motionThreshold) { moving = true; break; }
+            }
+        }
+
+        if (moving) {
+            requestAnimationFrame(tick);
+        } else {
+            simRunning = false;
+            last = 0;
+        }
+    }
+
+    function startSimulation() {
+        if (!simRunning) {
+            simRunning = true;
+            last = 0;
+            requestAnimationFrame(tick);
+        }
+    }
+
+    function kickSimulation() { // small helper to start if not running
+        startSimulation();
+    }
+</script>
+</body>
+</html>

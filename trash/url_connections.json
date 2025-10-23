@@ -1,0 +1,233 @@
+[
+  {
+    "connection": [
+      "https://chatgpt.com/",
+      "https://factsplat.com/splats/a06dfb64-a6a4-4fe4-b0e6-18662307a07d"
+    ],
+    "weight": 9
+  },
+  {
+    "connection": [
+      "https://chatgpt.com/",
+      "https://www.google.com/search?q=json.stringify+javascript&client=ubuntu-sn&hs=oyU&sca_esv=1c57431be9b2745b&channel=fs&sxsrf=AE3TifNnCL7pe61assN_VSJcqMAd-hkT-A%3A1759676018539&ei=cobiaPLeIIXJwPAPre2OyAI&oq=json.s&gs_lp=Egxnd3Mtd2l6LXNlcnAiBmpzb24ucyoCCAEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBSIMyUNwTWPclcAp4AZABAJgBqAGgAZMJqgEDMS44uAEDyAEA-AEBmAIToALfDMICChAAGLADGNYEGEfCAg0QABiABBiwAxhDGIoFwgIKECMYgAQYJxiKBcICChAAGIAEGEMYigXCAg4QLhiABBixAxjRAxjHAcICBBAjGCfCAgUQABiABMICBRAuGIAEmAMAiAYBkAYKkgcEMTAuOaAHkkSyBwMwLjm4B98KwgcIMi0yLjcuMTDIB9YC&sclient=gws-wiz-serp"
+    ],
+    "weight": 6
+  },
+  {
+    "connection": [
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=new+blob+javascript",
+      "https://www.google.com/search?q=json.stringify+javascript&client=ubuntu-sn&hs=oyU&sca_esv=1c57431be9b2745b&channel=fs&sxsrf=AE3TifNnCL7pe61assN_VSJcqMAd-hkT-A%3A1759676018539&ei=cobiaPLeIIXJwPAPre2OyAI&oq=json.s&gs_lp=Egxnd3Mtd2l6LXNlcnAiBmpzb24ucyoCCAEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBSIMyUNwTWPclcAp4AZABAJgBqAGgAZMJqgEDMS44uAEDyAEA-AEBmAIToALfDMICChAAGLADGNYEGEfCAg0QABiABBiwAxhDGIoFwgIKECMYgAQYJxiKBcICChAAGIAEGEMYigXCAg4QLhiABBixAxjRAxjHAcICBBAjGCfCAgUQABiABMICBRAuGIAEmAMAiAYBkAYKkgcEMTAuOaAHkkSyBwMwLjm4B98KwgcIMi0yLjcuMTDIB9YC&sclient=gws-wiz-serp"
+    ],
+    "weight": 6
+  },
+  {
+    "connection": [
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=new+blob+javascript",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=saving+data+to+json+file+javascript"
+    ],
+    "weight": 6
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://chatgpt.com/"
+    ],
+    "weight": 6
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=differnt+parts+of+tab+browser+name"
+    ],
+    "weight": 11
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=opposite+of+attract"
+    ],
+    "weight": 6
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://www.youtube.com/"
+    ],
+    "weight": 4
+  },
+  {
+    "connection": [
+      "https://www.youtube.com/",
+      "https://www.youtube.com/shorts/3HmvravsXgU"
+    ],
+    "weight": 3
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://www.youtube.com/shorts/3HmvravsXgU"
+    ],
+    "weight": 4
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=continuous"
+    ],
+    "weight": 6
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://factsplat.com&size=64%20graph-viewer.html:404:21"
+    ],
+    "weight": 6
+  },
+  {
+    "connection": [
+      "https://chatgpt.com/",
+      "https://chatgpt.com/c/68e2ceee-aef8-832a-ba81-658a76c2130f"
+    ],
+    "weight": 3
+  },
+  {
+    "connection": [
+      "https://chatgpt.com/c/68e2ceee-aef8-832a-ba81-658a76c2130f",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=differnt+parts+of+tab+browser+name"
+    ],
+    "weight": 3
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://chatgpt.com&size=64"
+    ],
+    "weight": 21
+  },
+  {
+    "connection": [
+      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://chatgpt.com&size=64",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=differnt+parts+of+tab+browser+name"
+    ],
+    "weight": 7
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://chatgpt.com/c/68e2ceee-aef8-832a-ba81-658a76c2130f"
+    ],
+    "weight": 15
+  },
+  {
+    "connection": [
+      "https://chatgpt.com/c/68e2ceee-aef8-832a-ba81-658a76c2130f",
+      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://chatgpt.com&size=64"
+    ],
+    "weight": 7
+  },
+  {
+    "connection": [
+      "https://factsplat.com/splats/a06dfb64-a6a4-4fe4-b0e6-18662307a07d",
+      "https://factsplat.com/splats/a06dfb64-a6a4-4fe4-b0e6-18662307a07d"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "https://chatgpt.com/",
+      "https://chatgpt.com/"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "https://factsplat.com/splats/a06dfb64-a6a4-4fe4-b0e6-18662307a07d",
+      "https://www.google.com/search?q=json.stringify+javascript&client=ubuntu-sn&hs=oyU&sca_esv=1c57431be9b2745b&channel=fs&sxsrf=AE3TifNnCL7pe61assN_VSJcqMAd-hkT-A%3A1759676018539&ei=cobiaPLeIIXJwPAPre2OyAI&oq=json.s&gs_lp=Egxnd3Mtd2l6LXNlcnAiBmpzb24ucyoCCAEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBSIMyUNwTWPclcAp4AZABAJgBqAGgAZMJqgEDMS44uAEDyAEA-AEBmAIToALfDMICChAAGLADGNYEGEfCAg0QABiABBiwAxhDGIoFwgIKECMYgAQYJxiKBcICChAAGIAEGEMYigXCAg4QLhiABBixAxjRAxjHAcICBBAjGCfCAgUQABiABMICBRAuGIAEmAMAiAYBkAYKkgcEMTAuOaAHkkSyBwMwLjm4B98KwgcIMi0yLjcuMTDIB9YC&sclient=gws-wiz-serp"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "https://chatgpt.com/",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=new+blob+javascript"
+    ],
+    "weight": 2
+  },
+  {
+    "connection": [
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=saving+data+to+json+file+javascript",
+      "https://www.google.com/search?q=json.stringify+javascript&client=ubuntu-sn&hs=oyU&sca_esv=1c57431be9b2745b&channel=fs&sxsrf=AE3TifNnCL7pe61assN_VSJcqMAd-hkT-A%3A1759676018539&ei=cobiaPLeIIXJwPAPre2OyAI&oq=json.s&gs_lp=Egxnd3Mtd2l6LXNlcnAiBmpzb24ucyoCCAEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBSIMyUNwTWPclcAp4AZABAJgBqAGgAZMJqgEDMS44uAEDyAEA-AEBmAIToALfDMICChAAGLADGNYEGEfCAg0QABiABBiwAxhDGIoFwgIKECMYgAQYJxiKBcICChAAGIAEGEMYigXCAg4QLhiABBixAxjRAxjHAcICBBAjGCfCAgUQABiABMICBRAuGIAEmAMAiAYBkAYKkgcEMTAuOaAHkkSyBwMwLjm4B98KwgcIMi0yLjcuMTDIB9YC&sclient=gws-wiz-serp"
+    ],
+    "weight": 2
+  },
+  {
+    "connection": [
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=new+blob+javascript",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=new+blob+javascript"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "https://www.google.com/search?q=json.stringify+javascript&client=ubuntu-sn&hs=oyU&sca_esv=1c57431be9b2745b&channel=fs&sxsrf=AE3TifNnCL7pe61assN_VSJcqMAd-hkT-A%3A1759676018539&ei=cobiaPLeIIXJwPAPre2OyAI&oq=json.s&gs_lp=Egxnd3Mtd2l6LXNlcnAiBmpzb24ucyoCCAEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBSIMyUNwTWPclcAp4AZABAJgBqAGgAZMJqgEDMS44uAEDyAEA-AEBmAIToALfDMICChAAGLADGNYEGEfCAg0QABiABBiwAxhDGIoFwgIKECMYgAQYJxiKBcICChAAGIAEGEMYigXCAg4QLhiABBixAxjRAxjHAcICBBAjGCfCAgUQABiABMICBRAuGIAEmAMAiAYBkAYKkgcEMTAuOaAHkkSyBwMwLjm4B98KwgcIMi0yLjcuMTDIB9YC&sclient=gws-wiz-serp"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "https://chatgpt.com/",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=differnt+parts+of+tab+browser+name"
+    ],
+    "weight": 2
+  },
+  {
+    "connection": [
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html",
+      "file:///home/trygve/Documents/Programming/url-logger/graph-viewer.html"
+    ],
+    "weight": 8
+  },
+  {
+    "connection": [
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=differnt+parts+of+tab+browser+name",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=opposite+of+attract"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=opposite+of+attract",
+      "https://www.youtube.com/"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=continuous",
+      "https://www.youtube.com/shorts/3HmvravsXgU"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://factsplat.com&size=64%20graph-viewer.html:404:21",
+      "https://www.google.com/search?client=ubuntu-sn&channel=fs&q=continuous"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "https://chatgpt.com/",
+      "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://factsplat.com&size=64%20graph-viewer.html:404:21"
+    ],
+    "weight": 1
+  },
+  {
+    "connection": [
+      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://chatgpt.com&size=64",
+      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://chatgpt.com&size=64"
+    ],
+    "weight": 2
+  }
+]

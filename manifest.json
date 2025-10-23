@@ -1,0 +1,30 @@
+{
+    "manifest_version": 3,
+    "name": "URL Logger",
+    "version": "1.1",
+    "description": "Logs the URL of the active tab, saves them persistently, and lets you export them to a text file.",
+
+
+    "permissions": [
+        "tabs",
+        "activeTab",
+        "downloads",
+        "storage"
+    ],
+
+    "background": {
+        "scripts": ["background.js", "logged-url-handler.js"]
+    },
+
+    "action": {
+        "default_title": "URL Logger",
+        "default_popup": "popup.html"
+    },
+
+    "web_accessible_resources": [
+        {
+            "resources": ["test1.png", "test2.png"],
+            "matches": ["https://web-accessible-resources-1.example.com/*"]
+        }
+    ]
+}

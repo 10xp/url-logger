@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Editable Network Graph Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #graph { width: 800px; height: 600px; border: 1px solid #ccc; margin-bottom: 20px; }
+        #inputArea { width: 800px; height: 100px; }
+        #updateBtn { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Editable Network Graph Viewer</h2>
+    <div id="graph"></div>
+    <textarea id="inputArea" placeholder='Enter graph data as JSON, e.g. [{"connection":["A","B"],"weight":2}]'></textarea><br>
+    <button id="updateBtn">Update Graph</button>
+
+    <script src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
+    <script>
+        // Initial sample data
+        let data = [
+            {connection: ["A", "B"], weight: 2},
+            {connection: ["B", "C"], weight: 3},
+            {connection: ["A", "C"], weight: 1}
+        ];
+
+        function parseInput(input) {
+            try {
+                return JSON.parse(input);
+            } catch (e) {
+                alert("Invalid JSON input.");
+                return null;
+            }
+        }
+
+        function buildGraph(data) {
+            const nodesSet = new Set();
+            const edges = [];
+            data.forEach(item => {
+                const [from, to] = item.connection;
+                nodesSet.add(from);
+                nodesSet.add(to);
+                edges.push({
+                    from,
+                    to,
+                    label: String(item.weight),
+                    font: {align: 'top'},
+                    color: {color: '#848484'},
+                    arrows: 'to'
+                });
+            });
+            const nodes = Array.from(nodesSet).map(id => ({id, label: id}));
+            return {nodes, edges};
+        }
+
+        function drawGraph(data) {
+            const container = document.getElementById('graph');
+            const graphData = buildGraph(data);
+            const options = {
+                nodes: { shape: 'ellipse', size: 20 },
+                edges: { smooth: true }
+            };
+            new vis.Network(container, graphData, options);
+        }
+
+        // Initial render
+        document.getElementById('inputArea').value = JSON.stringify(data, null, 2);
+        drawGraph(data);
+
+        // Update graph on button click
+        document.getElementById('updateBtn').onclick = () => {
+            const input = document.getElementById('inputArea').value;
+            const newData = parseInput(input);
+            if (newData) drawGraph(newData);
+        };
+    </script>
+</body>
+</html>
