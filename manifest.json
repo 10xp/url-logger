@@ -11,6 +11,7 @@
         "downloads",
         "storage"
     ],
+    
 
     "background": {
         "scripts": ["background.js", "logged-url-handler.js"]
