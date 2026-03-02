@@ -4,6 +4,9 @@
     "version": "1.1",
     "description": "Logs the URL of the active tab, saves them persistently, and lets you export them to a text file.",
 
+    "icons": {
+        "48": "icons/icon-48.png"
+    },
 
     "permissions": [
         "tabs",
